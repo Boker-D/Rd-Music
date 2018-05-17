@@ -7,7 +7,7 @@ client.on('ready', () => {
   console.log('---------------')
 });
 client.on("message", message => {
- if (message.content === "%help") {
+ if (message.content === "*help") {
   const embed = new Discord.RichEmbed() 
       .setColor("#ffff00")
       .setThumbnail(message.author.avatarURL)
@@ -38,7 +38,7 @@ client.on('message', message => {
     }
 });
 client.on('message', message => {
-if (message.content === "%help") {
+if (message.content === "*help") {
 message.reply("**Done | تــم**")
 message.reply("**تم ارسال اوامر البوت في الخاص**")
 message.react("📩")
@@ -58,7 +58,7 @@ const getYoutubeID = require('get-youtube-id');
 const fetchVideoInfo = require('youtube-info');
 
 const yt_api_key = "AIzaSyDeoIH0u1e72AtfpwSKKOSy3IPp2UHzqi4";
-const prefix = '%';
+const prefix = '*';
 const discord_token = "NDQ2NzY2MzY1MzAzNTA0OTE2.Dd91wA.PaOEsTa2-pzbVtux2Ywr7thZHOE";
 client.login(discord_token);
 client.on('ready', function() {
@@ -288,7 +288,7 @@ client.on('ready', () => {
       console.log(`ON ${client.guilds.size} Servers '     Script By : Boker ' `);
     console.log(`----------------`);
   console.log(`Logged in as ${client.user.tag}!`);
-client.user.setGame(` ON ${client.guilds.size} Servers - Prefix %help رمضان كريم`,"http://twitch.tv/Gangs")
+client.user.setGame(` ON ${client.guilds.size} Servers - Prefix *help رمضان كريم`,"http://twitch.tv/Gangs")
 client.user.setStatus("dnd")
 });
 client.on("guildCreate", guild => {
