@@ -101,15 +101,6 @@ client.on('ready',  () => {
   console.log(`Logged in as * [ " ${client.user.username} " ] Users! [ " ${client.users.size} " ]`);
   console.log(`Logged in as * [ " ${client.user.username} " ] channels! [ " ${client.channels.size} " ]`);
 });
-const Discord = require('discord.js');
-const { Client, Util } = require('discord.js');
-const client = new Discord.Client();
-const { PREFIX, GOOGLE_API_KEY } = require('./config');
-const YouTube = require('simple-youtube-api');
-const ytdl = require('ytdl-core');
-const youtube = new YouTube(GOOGLE_API_KEY);
-const queue = new Map();
-
 client.on('warn', console.warn);
 
 client.on('error', console.error);
