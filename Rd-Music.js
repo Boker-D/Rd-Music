@@ -1,11 +1,5 @@
 const Discord = require('discord.js');
-const { Client, Util } = require('discord.js');
 const client = new Discord.Client();
-const YouTube = require('simple-youtube-api');
-const ytdl = require('ytdl-core');
-const youtube = new YouTube(GOOGLE_API_KEY);
-const queue = new Map();
-
 client.on('ready', () => {
   client.user.setGame(` By Boker #8956 .`,'https://www.twitch.tv/Gangs');
   console.log('---------------');
@@ -57,13 +51,17 @@ client.on('ready',  () => {
   console.log(`Logged in as * [ " ${client.user.username} " ] Users! [ " ${client.users.size} " ]`);
   console.log(`Logged in as * [ " ${client.user.username} " ] channels! [ " ${client.channels.size} " ]`);
 });
-exports.PREFIX = '*';
+const ytdl = require('ytdl-core');
+const request = require('request');
+const fs = require('fs');
+const getYoutubeID = require('get-youtube-id');
+const fetchVideoInfo = require('youtube-info');
 
-exports.GOOGLE_API_KEY = 'AIzaSyAdORXg7UZUo7sePv97JyoDqtQVi3Ll0b8'; // لا تغيره
-client.on('warn', console.warn);
-
-client.on('error', console.error);
-
+const yt_api_key = "AIzaSyDeoIH0u1e72AtfpwSKKOSy3IPp2UHzqi4";
+const prefix = '*';
+const discord_token = process.env.BOT_TOKEN;
+client.login(discord_token);
+client.on('ready', function() {
 client.on('ready', () => console.log('Yo this ready!'));
 
 // client.on('disconnect', () => console.log('I just disconnected, making sure you know, I will reconnect now...'));
