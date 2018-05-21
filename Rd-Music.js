@@ -102,61 +102,56 @@ client.on('message', function(message) {
 	const mess = message.content.toLowerCase();
 	const args = message.content.split(' ').slice(1).join(' ');
 
-	if (command === `*play`) {
-		const voiceChannel = msg.member.voiceChannel;
-		if (!voiceChannel) return msg.channel.send('أنا آسف ولكن عليك أن تكون في قناة صوتية لتشغيل الموسيقى!');
-		const permissions = voiceChannel.permissionsFor(msg.client.user);
-		if (!permissions.has('CONNECT')) {
-			return msg.channel.send('لا أستطيع أن أتكلم في هذه القناة الصوتية، تأكد من أن لدي الصلاحيات الازمة !');
+	if (mess.startsWith(prefix + 'play')) {
+		if (!message.member.voiceChannel) return message.reply('** عفوا ,انت غير موجود في روم صوتي **');
+		// if user is not insert the URL or song title
+		if (args.length == 0) {
+			let play_info = new Discord.RichEmbed()
+				.setAuthor(client.user.username, client.user.avatarURL)
+				.setDescription('**قم بوضع الرابط , او  الاسم**')
+			message.channel.sendEmbed(play_info)
+			return;
 		}
-		if (!permissions.has('SPEAK')) {
-			return msg.channel.send('لا أستطيع أن أتكلم في هذه القناة الصوتية، تأكد من أن لدي الصلاحيات الازمة !');
-		}
-		if (!permissions.has('EMBED_LINKS')) {
-			return msg.channel.sendMessage("**لا يوجد لدي صلاحيات `EMBED LINKS`**")
-		}
+		if (queue.length > 0 || isPlaying) {
+			getID(args, function(id) {
+				add_to_queue(id);
+				fetchVideoInfo(id, function(err, videoInfo) {
+					if (err) throw new Error(err);
+					let play_info = new Discord.RichEmbed()
+						.setAuthor("أضيف إلى قائمة الانتظار", message.author.avatarURL)
+						.setDescription(`**${videoInfo.title}**`)
+						.setColor("RANDOM")
+						.setFooter('Requested By:' + message.author.tag)
+						.setImage(videoInfo.thumbnailUrl)
+					//.setDescription('?')
+					message.channel.sendEmbed(play_info);
+					queueNames.push(videoInfo.title);
+					// let now_playing = videoInfo.title;
+					now_playing.push(videoInfo.title);
 
-		if (url.match(/^https?:\/\/(www.youtube.com|youtube.com)\/playlist(.*)$/)) {
-			const playlist = await youtube.getPlaylist(url);
-			const videos = await playlist.getVideos();
-			for (const video of Object.values(videos)) {
-				const video2 = await youtube.getVideoByID(video.id); // eslint-disable-line no-await-in-loop
-				await handleVideo(video2, msg, voiceChannel, true); // eslint-disable-line no-await-in-loop
-			}
-			return msg.channel.send(` **${playlist.title}** تم اضافة القائمه!`);
-		} else {
-			try {
-				var video = await youtube.getVideo(url);
-			} catch (error) {
-				try {
-					var videos = await youtube.searchVideos(searchString, 5);
-					let index = 0;
-					const embed1 = new Discord.RichEmbed()
-			        .setDescription(`**اختار رقم المقطع** :
-${videos.map(video2 => `[**${++index} **] \`${video2.title}\``).join('\n')}`)
-					.setFooter("")
-					msg.channel.sendEmbed(embed1).then(message =>{message.delete(20000)})
-					
-					// eslint-disable-next-line max-depth
-					try {
-						var response = await msg.channel.awaitMessages(msg2 => msg2.content > 0 && msg2.content < 11, {
-							maxMatches: 1,
-							time: 10000,
-							errors: ['time']
-						});
-					} catch (err) {
-						console.error(err);
-						return msg.channel.send('لم يتم تحديد العدد لتشغيل الاغنيه.');
-					}
-					const videoIndex = parseInt(response.first().content);
-					var video = await youtube.getVideoByID(videos[videoIndex - 1].id);
-				} catch (err) {
-					console.error(err);
-					return msg.channel.send(':X: لم أستطع الحصول على أية نتائج بحث.');
-				}
-			}
-			return handleVideo(video, msg, voiceChannel);
+				});
+			});
 		}
+		else {
+
+			isPlaying = true;
+			getID(args, function(id) {
+				queue.push('placeholder');
+				playMusic(id, message);
+				fetchVideoInfo(id, function(err, videoInfo) {
+					if (err) throw new Error(err);
+					let play_info = new Discord.RichEmbed()
+						.setAuthor(`Added To Queue`, message.author.avatarURL)
+						.setDescription(`**${videoInfo.title}**`)
+						.setColor("RANDOM")
+						.setFooter('بطلب من: ' + message.author.tag)
+						.setThumbnail(videoInfo.thumbnailUrl)
+					//.setDescription('?')
+					message.channel.sendEmbed(play_info);
+				});
+			});
+		}
+	}
 	else if (mess.startsWith(prefix + 'skip')) {
 		if (!message.member.voiceChannel) return message.reply('**عفوا ,انت غير موجود في روم صوتي**');
 		message.reply(':gear: **تم التخطي**').then(() => {
